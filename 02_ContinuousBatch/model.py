@@ -1,5 +1,6 @@
 import torch
 from transformers import AutoModelForCausalLM
+from transformers.cache_utils import DynamicCache
 
 
 #加载HF模型
@@ -25,8 +26,14 @@ class Model:
         if attention_mask is not None and attention_mask.device != self.model.device:
             attention_mask = attention_mask.to(self.model.device)
 
+
         with torch.no_grad():
-            outputs = self.model(input_ids, past_key_values=past_key_values, attention_mask=attention_mask, use_cache=True)
+            outputs = self.model(
+                input_ids,
+                past_key_values=past_key_values,
+                attention_mask=attention_mask,
+                use_cache=True,
+            )
             # outputs的类型是 transformers.modeling_outputs.CausalLMOutputWithPast，包含logits和past_key_values
             # 详细定义见 transformers.modeling_outputs.CausalLMOutputWithPast
         return outputs
